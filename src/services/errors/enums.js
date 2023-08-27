@@ -1,0 +1,12 @@
+const EErros = {
+    INVALID_TYPES_ERROR: 1,
+    ERROR_GET_CARTS: 2,
+    ERROR_POST_CARTS: 3,
+    ERROR_ADD_TO_CART: 4,
+    ERROR_REMOVE_FROM_CART: 5,
+    ERROR_UPDATE_CART_QTY: 6,
+    ERROR_GENERATING_TICKET: 7,
+  };
+  
+  export default EErros;
+  

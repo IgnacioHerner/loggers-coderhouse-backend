@@ -1,6 +1,6 @@
 import productsModel from "../dao/models/product.model.js";
 
-export const creatProductDB = async () => {
+export const createProductDB = async () => {
     const existingProducts = await productsModel.countDocuments()
     if(!existingProducts) {
         const products = await productsModel.insertMany([

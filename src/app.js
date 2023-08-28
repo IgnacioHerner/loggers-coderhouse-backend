@@ -9,7 +9,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { MONGO_DB_NAME, MONGO_URI } from "./config/config.js";
-import { roleAccess } from "./utils/utils.js";
+import { roleAccess, generateProducts, generateProductsMocking } from "./utils/utils.js";
 import { ServerUp } from "./dto/persistanceFactory.js";
 import initializePassport from "./config/passport.config.js";
 
@@ -17,8 +17,6 @@ import productsRouter from "./routes/products.routes.js";
 import cartsRouter from "./routes/carts.routes.js";
 import sessionRouter from "./routes/session.routes.js";
 import loggerTest from "./routes/loggerTest.routes.js";
-
-import {creatProductDB} from './utils/createProducts.DB.js'
 import errorHandler from "./middleware/error.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -61,6 +59,8 @@ app.use("/api/carts", ensureAuthenticated, roleAccess, cartsRouter);
 app.use("/api/session", sessionRouter);
 app.use("/api/loggerTest", loggerTest);
 
-creatProductDB()
+generateProductsMocking();
+
+generateProducts()
 
 ServerUp(app);

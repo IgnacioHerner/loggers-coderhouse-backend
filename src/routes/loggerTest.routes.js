@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
     logger.debug("Level: 5");
-    logger.http("Lelel: 4");
+    logger.http("Level: 4");
     logger.info("Level 3");
     logger.warning("Level: 2");
     logger.error("Level: 1");

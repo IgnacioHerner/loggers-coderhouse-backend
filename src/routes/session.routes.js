@@ -22,16 +22,13 @@ router.get("/failureRegister", (req, res) => {
     res.send({error: "failed!"})
 })
 
-// router.get("/login", async(req, res) => {
-//     res.render("sessions/login")
-// })
 
 router.get("/login", async (req, res) => {
     res.render("sessions/login")
 })
 
 router.post(
-    "login",
+    "/login",
     passport.authenticate("login", {failureRedirect: "/session/failLogin"}),
     async (req, res) => {
         if(!req.user) {

@@ -1,27 +1,117 @@
+// import { Router } from "express";
+// import passport from "passport";
+// import logger from '../utils/logger.js'
+
+// const router = Router()
+
+// router.get("/register", async (req, res) => {
+//     logger.http("GET /session/register")
+//     res.render("sessions/register")
+// })
+
+// router.post("/register", passport.authenticate("register", {
+//     failureRedirect: "/session/failureRegister"
+// }),
+//     async (req, res) => {
+//         logger.info("POST /session/register success")
+//         res.redirect("/api/session/login")
+//     }
+// );
+
+// router.get("/failureRegister", (req, res) => {
+//     res.send({error: "failed!"})
+// })
+
+
+// router.get("/login", async (req, res) => {
+//     res.render("sessions/login")
+// })
+
+// router.post(
+//     "/login",
+//     passport.authenticate("login", {failureRedirect: "/session/failLogin"}),
+//     async (req, res) => {
+//         if(!req.user) {
+//             return res.status(400).send({status:"error", error: "Invalid credentials"})
+//         }
+//         req.session.user = {
+//             first_name: req.user.first_name,
+//             last_name: req.user.last_name,
+//             email: req.user.email,
+//             age: req.user.age,
+//         }
+
+//         logger.info("Login success")
+
+//         res.redirect("/api/products")
+//     }
+// )
+
+// router.get("failLogin", async (req, res) => {
+//     res.send({error: "Fail in Login"})
+// })
+
+// router.get("/logout", async (req, res) => {
+//     req.session.destroy((err) => {
+//         if(err){
+//             logger.error("Error in logout\n", err)
+//             res.status(500).render("errors/base", {error: err})
+//         } else {
+//             logger.info("Logout success")
+//             res.redirect("/api/session/login")
+//         }
+//     })
+// })
+
+// router.get(
+//     "/github",
+//     passport.authenticate("github", {scope: ["user: email"]}),
+//     async (req, res) => {}
+// )
+
+// router.get(
+//     "/githubcallback",
+//     passport.authenticate("github", {failureRedirect: "/api/session/login"}),
+//     async (req, res) => {
+//         req.session.user = req.user;
+//         req.redirect("/api/products")
+//     }
+// )
+
+// export default router;
+
 import { Router } from "express";
 import passport from "passport";
-import logger from '../utils/logger.js'
+import logger from "../utils/logger.js";
+import userModel from '../dao/models/user.model.js'
+import { createHash, generateRandomString } from "../utils/utils.js";
+import userPasswordModel from '../dao/models/userPassword.model.js'
+import nodemailer from 'nodemailer'
+import { GMAIL_CONFIG, PORT } from "../config/config.js";
+import Mailgen from "mailgen";
 
 const router = Router()
 
-router.get("/register", async (req, res) => {
-    logger.http("GET /session/register")
+router.get("/register", async (req,res) => {
+    logger.http("GET /session/register");
     res.render("sessions/register")
 })
 
-router.post("/register", passport.authenticate("register", {
-    failureRedirect: "/session/failureRegister"
-}),
+
+router.post(
+    "/register",
+    passport.authenticate("register", {
+        failureRedirect: "/session/failureRegister",
+    }),
     async (req, res) => {
         logger.info("POST /session/register success")
         res.redirect("/api/session/login")
     }
-);
+)
 
 router.get("/failureRegister", (req, res) => {
-    res.send({error: "failed!"})
+    res.send({error: "failed"})
 })
-
 
 router.get("/login", async (req, res) => {
     res.render("sessions/login")
@@ -32,7 +122,9 @@ router.post(
     passport.authenticate("login", {failureRedirect: "/session/failLogin"}),
     async (req, res) => {
         if(!req.user) {
-            return res.status(400).send({status:"error", error: "Invalid credentials"})
+            return res
+            .status(400)
+            .send({ status: "error", error: "Invalid credentials"})
         }
         req.session.user = {
             first_name: req.user.first_name,
@@ -47,10 +139,10 @@ router.post(
     }
 )
 
-router.get("failLogin", async (req, res) => {
-    res.send({error: "Fail in Login"})
-})
-
+router.get("/failLogin", async (req, res) => {
+    res.send({ error: "Fail in login" });
+});
+  
 router.get("/logout", async (req, res) => {
     req.session.destroy((err) => {
         if(err){
@@ -63,19 +155,120 @@ router.get("/logout", async (req, res) => {
     })
 })
 
-router.get(
-    "/github",
-    passport.authenticate("github", {scope: ["user: email"]}),
-    async (req, res) => {}
-)
+router.get("/github",
+    passport.authenticate("github", { scope: ["user: email"] }),
+    async (req, res) => {
+        
+    }
+);
+  
 
 router.get(
     "/githubcallback",
     passport.authenticate("github", {failureRedirect: "/api/session/login"}),
     async (req, res) => {
         req.session.user = req.user;
-        req.redirect("/api/products")
+        res.redirect("/api/products")
     }
 )
+
+router.get("/forgot-password", async (req, res) => {
+    res.render("sessions/forgotPassword")
+})
+
+router.post("/forgot-password", async (req, res) => {
+    const email = req.body.email;
+    const user = await userModel.findOne({email})
+    if(!user) {
+        logger.error("User not found - /forgot-password")
+        return res.status(404).render("errors/404")
+    }
+
+    const token = generateRandomString(16);
+    await userPasswordModel.create({email, token})
+
+    const mailerConfig = {
+        service: "gmail",
+        auth: {user: GMAIL_CONFIG.user, pass: GMAIL_CONFIG.pass}
+    }
+
+    let transporter = nodemailer.createTransport(mailerConfig)
+
+    const mailGenerator = new Mailgen({
+        theme: "default",
+        product: {
+            name: "NBA Store API",
+            link: "http://localhost:8080/api/products"
+        }
+    })
+
+    const response = {
+        body: {
+            name: email,
+            intro: "Welcome to password recovery",
+            action: {
+                instructions: "To reset your password, please click on the following button",
+                button: {
+                    color: "#167000",
+                    text: "Change your password",
+                    link: `http://localhost:${PORT}/api/session/verify-token/${token}`,
+                }
+            },
+            outro: "If it wasn't you, ignore this email"
+        }
+    }
+
+    const mail = mailGenerator.generate(response)
+
+    let message = {
+        from: GMAIL_CONFIG.user,
+        to: email,
+        subject: "[NBA Store API] Reset your password",
+        html: mail
+    }
+
+    try {
+        transporter.sendMail(message)
+        res.render("sessions/send-token", {email})
+    } catch (err) {
+        logger.error("Error in send token")
+        res.render("errors/404")
+    }
+})
+
+router.get("/reset-password/:token", async (req, res) => {
+    res.redirect(`api/session/verify-token/${req.params.token}`)
+})
+
+router.get("/verify-token/:token", async (req, res) => {
+    const userPassword = userPasswordModel.findOne({
+        token: req.params.token
+    })
+    if(!userPassword) {
+        return (
+            logger.error("Token verification error - /verify-token"),
+            res.render("sessions/token-error")
+        )
+    }
+
+    const user = userPassword.email
+    res.render("sessions/resetPassword", {user})
+})
+
+router.post("/reset-password/:user", async (req, res) => {
+    try {
+        const user = await userModel.findOne({email: req.params.user})
+        await userModel.findByIdAndUpdate(user, {
+            password: createHash(req.body.password)
+        })
+        logger.info("password reset success")
+        res.render("sessions/reset-success")
+        await userPasswordModel.deleteOne({email: req.params.user})
+    } catch (err) {
+        logger.error("Error in reset password")
+        res.render("errors/404")
+    }
+})
+
 
 export default router;

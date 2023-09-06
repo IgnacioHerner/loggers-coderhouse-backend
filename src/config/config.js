@@ -12,3 +12,5 @@ export const PORT = process.env.PORT;
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 export const ADMIN_PW = process.env.ADMIN_PW;
 export const PERSISTANCE = process.env.PERSISTANCE;
+export const MONGO_DB_TEST_NAME = process.env.MONGO_DB_TEST_NAME;
+export const GMAIL_CONFIG = process.env.GMAIL_CONFIG;

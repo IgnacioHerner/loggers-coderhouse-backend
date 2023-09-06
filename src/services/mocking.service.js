@@ -1,5 +1,5 @@
 import MockingModel from "../dao/models/mocking.model.js";
-
+import logger from '../utils/logger.js'
 export const getMockingService = async (
     page = 1,
     limit = 10,
@@ -26,6 +26,6 @@ export const getMockingService = async (
         const mockingProduct = await MockingModel.paginate(filter, options);
         return mockingProduct;
     } catch (err) {
-        throw new Error("An error ocurred while getting the products")
+        logger.error(`An error occurred when obtaining the mocking products.${err.stack}  `)
     }
 }

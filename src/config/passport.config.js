@@ -5,6 +5,7 @@ import GithubModel from '../dao/models/github.model.js'
 import GitHubStrategy from 'passport-github2'
 import { createHash, isValidPassword } from '../utils/utils.js'
 import { CLIENT_ID, CLIENT_SECRET, ADMIN_EMAIL } from './config.js'
+import Cart from '../dao/models/cart.model.js'
 
 const LocalStrategy = local.Strategy;
 
@@ -45,12 +46,15 @@ const initializePassport = () => {
 
                     const hashedPassword = createHash(password)
 
+                    const cartForNewUser = await Cart.create({})
                     const newUser = {
                         first_name,
                         last_name,
                         age,
                         email,
                         password: hashedPassword,
+                        cart: cartForNewUser._id,
+                        role: email === ADMIN_EMAIL ? "admin" : req.body.role
                     };
 
                     const result = await UserModel.create(newUser)
@@ -64,6 +68,36 @@ const initializePassport = () => {
     )
 
 
+    // passport.use(
+    //     "github",
+    //     new GitHubStrategy(
+    //         {
+    //             clientID: CLIENT_ID,
+    //             clientSecret: CLIENT_SECRET,
+    //             callbackURL: "http://localhost:8080/api/session/githubcallback"
+    //         },
+    //         async (profile, done) => {
+
+    //             try {
+    //                 const user = await GithubModel.findOne({
+    //                     email: profile._json.email,
+    //                 })
+    //                 if (user) return done(null, user)
+
+    //                 const newUser = await GithubModel.create({
+    //                     first_name: profile._json.name,
+    //                     email: profile._json.email,
+    //                 })
+
+    //                 return done(null, newUser)
+    //             } catch (err) {
+    //                 return done("Error to login with Github" + err)
+    //             }
+
+    //             done(null, profile)
+    //         }
+    //     )
+    // )
     passport.use(
         "github",
         new GitHubStrategy(
@@ -72,29 +106,29 @@ const initializePassport = () => {
                 clientSecret: CLIENT_SECRET,
                 callbackURL: "http://localhost:8080/api/session/githubcallback"
             },
-            async (profile, done) => {
-                console.log(profile)
-
+            async (accessToke, refreshToken, profile, done) => {    
                 try {
                     const user = await GithubModel.findOne({
                         email: profile._json.email,
-                    })
-                    if (user) return done(null, user)
-
+                    });
+    
+                    if (user) {
+                        return done(null, user);
+                    }
+    
                     const newUser = await GithubModel.create({
                         first_name: profile._json.name,
                         email: profile._json.email,
-                    })
-
-                    return done(null, newUser)
+                    });
+    
+                    return done(null, newUser);
                 } catch (err) {
-                    return done("Error to login with Github" + err)
+                    return done("Error to login with Github" + err);
                 }
-
-                done(null, profile)
             }
         )
-    )
+    );
+    
 
     passport.use(
         "login",

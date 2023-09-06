@@ -3,5 +3,5 @@ export const CustomError = ({ name = "Error", cause, message, code}) => {
     error.name = name;
     error.code = code;
 
-    throw error
+    return error
 }

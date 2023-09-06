@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+const cartCollection = "Cart";
+
 const cartSchema = new mongoose.Schema({
   products: {
     type: [
@@ -18,6 +20,6 @@ const cartSchema = new mongoose.Schema({
   },
 });
 
-const Cart = mongoose.model("Cart", cartSchema);
+const cartModel = mongoose.model(cartCollection, cartSchema);
 
-export default Cart;
+export default cartModel;

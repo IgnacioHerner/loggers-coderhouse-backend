@@ -5,10 +5,14 @@ export const getCarts = async (req, res) => {
     logger.http("GET api/carts")
 
     try {
-        const carts = await getCartsService()
-        res.render("carts", {carts})
+        const userId = req.user._id;
+        const cart = await getCartsService(userId)
+        if (!cart) {
+            throw new Error ("The carts are empty")
+        }
+        res.render("carts", {cart: [cart]})
     } catch (err) {
-        logger.error("An error ocurred when obtaing the carts \n", err)
+        logger.error(`An error ocurred when obtaing the carts ${err.stack}`)
         res.status(500).json({err: "An error ocurred when obtaining the carts"})
     }
 }

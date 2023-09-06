@@ -1,4 +1,6 @@
 import productsModel from "../dao/models/product.model.js";
+import logger from "../utils/logger.js";
+
 
 export const createProduct = async function createProduct(productData) {
     const {
@@ -15,7 +17,7 @@ export const createProduct = async function createProduct(productData) {
     const codeExists = await productsModel.exists({ code })
 
     if (codeExists) {
-        throw new Error("The product code already exists")
+        logger.error(`The product code already exists.${err.stack}  `);    
     }
 
     const product = new productsModel({

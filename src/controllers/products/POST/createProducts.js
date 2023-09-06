@@ -7,9 +7,9 @@ export const createProduct = async (req, res) => {
         logger.info(`Product ${product.title} created`)
         res.redirect("/api/products")
     } catch (err) {
-        logger.error("An error ocurred while creating the product \n", err)
+        logger.error(`An error occurred while creating the product.${err.stack}  `);
         res
-            .status(500)
-            .json({err: "An error ocurred while creating the product"})
-    }
+          .status(500)
+          .json({ err: "An error occurred while creating the product" });
+      }
 }

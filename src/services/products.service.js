@@ -9,6 +9,11 @@ export const getProductsService = async (
     query = ""
 ) => {
     try {
+
+        if (typeof page !== 'number' || typeof limit !== 'number' || typeof sort !== 'number' || typeof query !== 'string') {
+            throw new Error("Invalid input values");
+        }
+
         const filter = query
             ? {
                 $or: [
@@ -25,18 +30,29 @@ export const getProductsService = async (
             lean: true,
         }
 
+        // Realizar la consulta de la base de datos
         const products = await productsModel.paginate(filter, options)
+
+        // devolver productos y paginacion 
         return products;
     } catch (err) {
         logger.error(`An error occurred when obtaining products.${err.stack}  `)
+        throw err;
     }
 }
 
 export const createProductService = async (productData) => {
     try {
+        // Validacion
+        if(!productData || typeof productData !== 'object') {
+            throw new Error("Invalid product data")
+        }
+        // Crear el producto utilizando productManager 
         const product = await productManager.createProduct(productData)
+        // Devolver el producto creado
         return product
     } catch (err) {
         logger.error(`An error occurred while creating the product${err.stack}  `)
+        throw err;
     }
 }

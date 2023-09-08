@@ -53,15 +53,15 @@ export const getPurchase = async (req, res) => {
     try {
         const userId = req.user.id;
         const purchases = await getCartsService(userId)
-        const purchase = purchases;
-
-        if(!purchase || purchase.products || purchase.products.length === 0){
+        
+        if(!purchases || purchases,length === 0){
             logger.error(`The purchase is empty ${err.stack}`)
-
-            return res.status(400).render("errors/purchaseErr", {
+            
+            return res.status(404).render("errors/purchaseErr", {
                 message: "The purchase is empty"
             })
         }
+        const purchase = purchases[0];
 
         const ticket = await generateTicketService(purchase, req.user.email)
         res.status(200).render("purchase", {purchase, ticket})

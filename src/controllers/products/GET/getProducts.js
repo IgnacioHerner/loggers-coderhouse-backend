@@ -11,29 +11,36 @@ export const getProducts = async (req, res) => {
     logger.http("GET /api/products")
 
     try {
+
+        // Validar y limpiar los parámetros de consulta
+        const validatedPage = Math.max(1, page);
+        const validatedLimit = Math.max(1, limit);
+        const validatedSort = sort === -1 ? -1 : 1;
+        const validatedQuery = query;
+
+
         const products = await getProductsService(page, limit, sort, query)
 
-        const prevPage = page > 1 ? page - 1 : null;
-        const nextPage = page < products.totalPages ? page + 1 : null; 
+        const prevPage = validatedPage > 1 ? validatedPage - 1 : null;
+        const nextPage = validatedPage < products.totalPages ? validatedPage + 1 : null; 
 
         const data = {
             products,
-            query,
-            limit,
-            sort,
+            query: validatedQuery,
+            limit: validatedLimit,
+            sort: validatedSort,
             prevPage,
             nextPage,
             userEmail: user.email,
             userRole: user.role,
         };
 
-        Object.assign(data, req.query); 
+        Object.assign(data, req.query);
+
         res.status(201).render("products", data);       
     } catch (err) {
-        logger.error("An error occurred while getting the products.\n", err);
-        res
-          .status(500)
-          .json({ err: "An error occurred while getting the products" });
+        logger.error(`An error occurred while getting the products${err.stack}  `);
+        res.status(500).json({ err: "An error occurred while getting the products" });
     }
 }
 

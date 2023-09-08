@@ -11,29 +11,35 @@ export const getMocking = async (req, res) => {
     logger.http("GET /api/products/mockingproducts")
 
     try {
+
+        // Validar y limpiar los parámetros de consulta
+        const validatedPage = Math.max(1, page);
+        const validatedLimit = Math.max(1, limit);
+        const validatedSort = sort === -1 ? -1 : 1;
+        const validatedQuery = query;
+
         const mockingproducts = await getMockingService(page, limit, sort, query)
 
-        const prevPage = page > 1 ? page -1 : null;
-        const nextPage = page < mockingproducts.totalPages ? page + 1 : null;
+        // Calcular la paginacion
+        const prevPage = validatedPage > 1 ? validatedPage - 1 : null;
+        const nextPage = validatedPage < mockingproducts.totalPages ? validatedPage + 1 : null;
 
         const data = {
             mockingproducts,
-            query,
-            limit,
-            sort,
+            query: validatedQuery,
+            limit: validatedLimit,
+            sort: validatedSort,
             prevPage,
             nextPage,
             userEmail: user.email,
             userRole: user.role
-        }
+        };
 
         Object.assign(data, req.query)
 
         res.status(201).render("mocking", data)
     } catch (err) {
         logger.error(`An error occurred while getting the products${err.stack}  `);
-        res
-          .status(500)
-          .json({ err: "An error occurred while getting the products" });
-      }
+        res.status(500).json({ err: "An error occurred while getting the products" });
+    }
 }

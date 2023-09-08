@@ -2,7 +2,7 @@ export const isAdmin = (req, res, next) => {
     const user = req.user;
     let isAdminUser = false
 
-    if(user.role == "admin") {
+    if(user && user.role == "admin") {
         isAdminUser = true
         next()
     } else {

@@ -3,51 +3,99 @@ import logger from "../utils/logger.js";
 
 
 export const createProduct = async function createProduct(productData) {
-    const {
-        title,
-        description,
-        price,
-        status,
-        code,
-        stock,
-        category,
-        thumbnail
-    } = productData
+    try {
+        
+        //Validacion
+        if(!productData || typeof productData !== 'object'){
+            throw new Error("Invalid product data")
+        }
+        
+        const {
+            title,
+            description,
+            price,
+            status,
+            code,
+            stock,
+            category,
+            thumbnail
+        } = productData
 
-    const codeExists = await productsModel.exists({ code })
+        const codeExists = await productsModel.exists({ code })
 
-    if (codeExists) {
-        logger.error(`The product code already exists.${err.stack}  `);    
+        if (codeExists) {
+            logger.error(`The product code already exists.${err.stack}  `);    
+        }    
+        const product = new productsModel({
+            title,
+            description,
+            price,
+            status,
+            code,
+            stock,
+            category,
+            thumbnail,
+        })
+
+        await product.save()
+
+        return product
+
+    } catch (err) {
+        logger.error(`An error occurred while creating the product: ${err.stack}  `)
+        throw err;
     }
 
-    const product = new productsModel({
-        title,
-        description,
-        price,
-        status,
-        code,
-        stock,
-        category,
-        thumbnail,
-    })
-
-    await product.save()
-    return product
 }
 
 export const getProducts = async function getProducts() {
-    const products = await productsModel.find()
-    return products
+    try {      
+        const products = await productsModel.find()
+        return products
+    } catch (err) {
+        logger.error(`An error occurred while fetching products: ${err.stack}  `)
+        throw err;
+    }
 }
 
 export const updateProduct = async function updateProduct (productId, newData) {
-    const product = await productsModel.findByIdAndUpdate(productId, newData, {
-        new: true
-    })
-    return product
+    try {
+
+        if(!productId || typeof newData !== 'object'){
+            throw new Error("Invalid input values")
+        }
+
+        const product = await productsModel.findByIdAndUpdate(productId, newData, {
+            new: true
+        })
+
+        if(!product) {
+            throw new Error("Product not found")
+        }
+        
+        return product
+        
+    } catch (err) {
+        logger.error(`An error occurred while updating the product: ${err.stack}  `)
+        throw err;
+    }
 }
 
 export const deleteProduct = async function deleteProduct(productId){
-    const product = await productModel.findByIdAndDelete(productId)
-    return product;
+    try {
+        if(!productId) {
+            throw new Error("Invalid input value")
+        }
+
+        const product = await productModel.findByIdAndDelete(productId)
+
+        if(!product) {
+            throw new Error("Product not found")
+        }
+        
+        return product;
+    } catch (err) {
+        logger.error(`An error occurred while deleting the product: ${err.stack}  `)
+        throw err;
+    }
 }

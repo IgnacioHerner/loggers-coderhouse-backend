@@ -8,45 +8,33 @@ import {
 import mongoose from 'mongoose'
 import logger from '../utils/logger.js'
 
-export const ServerUp = async(app) => {
-    switch(PERSISTANCE){
-        case "DEV":
-            try{
+export const ServerUp = async (app) => {
+    try {
+        if(!MONGO_URI || !MONGO_DB_NAME || !MONGO_DB_TEST_NAME || !PORT || !PERSISTANCE){
+            throw new Error("Environment variables are not properly configured")
+        }
+
+        switch(PERSISTANCE) {
+            case "DEV":
                 await mongoose.connect(MONGO_URI, {
-                    dbName: MONGO_DB_NAME,
+                    dbName: MONGO_DB_NAME
                 })
-                logger.debug("DB Development connected!")
-                app.listen(PORT, () => 
-                    logger.info(`Server Up on http://localhost:${PORT}/api/products\n`)
-                );
-            } catch (err) {
-                logger.fatal("Error when trying to start the server. \n", err)
-            }
-            break;
-        case "PROD":
-            try{
+                logger.debug("DB Development connected")
+                break;
+            case "PROD": 
                 await mongoose.connect(MONGO_URI, {
-                    dbName: MONGO_DB_TEST_NAME,
+                    dbName: MONGO_DB_TEST_NAME
                 })
-                logger.debug("DB production connected")
-                app.listen(PORT, () => 
-                    logger.info(`Server Up on http://localhost:${PORT}/api/products\n`)
-                )
-            } catch (err) {
-                logger.fatal("Error when trying to start the server. \n", err)
-            }
-            break;
+                logger.debug("DB Production connected")
+                break
+            default: 
+                throw new Error("Invalid PERSISTANCE value.")
+        }
+        const port = PORT
+        app.listen(port, () => {
+            logger.info(`Server Up on http://localhost:${port}/api/products\n`)
+        })
+    }catch (err) {
+        logger.fatal("Error when trying to start the server. \n", err);
     }
 }
-
-// export const ServerUp = async (app) => {
-//     try {
-//         await mongoose.connect(MONGO_URI, {
-//             dbName: MONGO_DB_NAME,
-//         });
-//         console.log("DB Connected!")
-//         app.listen(PORT, () => console.log("Server Up"))
-//     } catch (err) {
-//         console.log("Error en DB")
-//     }
-// }

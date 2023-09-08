@@ -12,7 +12,6 @@ import { fileURLToPath } from "url";
 
 import initializePassport from "./config/passport.config.js";
 import { MONGO_DB_NAME, MONGO_URI } from "./config/config.js";
-// import { roleAccess, generateProducts, generateProductsMocking } from "./utils/utils.js";
 import { ServerUp } from "./dto/persistanceFactory.js";
 // ? ROUTES
 import productsRouter from "./routes/products.routes.js";

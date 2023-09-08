@@ -3,6 +3,9 @@ const EErros = {
     ERROR_GET_CARTS: 2,
     ERROR_POST_CARTS: 3,
     ERROR_ADD_TO_CART: 4,
+    ERROR_INVALID_INPUT: 5,
+    ERROR_PRODUCT_NOT_FOUND: 6,
+    ERROR_INVALID_QUANTITY: 7,
   };
   
   export default EErros;

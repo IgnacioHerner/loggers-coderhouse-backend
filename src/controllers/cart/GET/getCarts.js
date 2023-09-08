@@ -6,13 +6,21 @@ export const getCarts = async (req, res) => {
 
     try {
         const userId = req.user._id;
-        const cart = await getCartsService(userId)
-        if (!cart) {
-            throw new Error ("The carts are empty")
+
+        if (!userId) {
+            throw new Error("Invalid user ID")
         }
-        res.render("carts", {cart: [cart]})
+
+        const cart = await getCartsService(userId)
+
+        if (!cart) {
+            return res.status(200).json({message: "The cart is empty"})
+        }
+
+        return res.render("carts", {cart: [cart]})
     } catch (err) {
         logger.error(`An error ocurred when obtaing the carts ${err.stack}`)
+
         res.status(500).json({err: "An error ocurred when obtaining the carts"})
     }
 }
@@ -32,11 +40,11 @@ export const getPurchase = async (req, res) => {
 
             logger.info("The purchase was obtained successfully")
 
-            res.status(200).render("purchase", {purchase, ticket})
+            return res.status(200).render("purchase", {purchase, ticket})
         }
     } catch (err) {
         logger.error("An error ocurred when obtaining the purchase \n", err)
-        res
+        return res
             .status(500)
             .json({err: "An error ocurred when obtaining the purchase"})
     }

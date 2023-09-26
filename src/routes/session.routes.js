@@ -51,6 +51,9 @@ router.post(
                 email: req.user.email,
                 age: req.user.age,     
             }
+            req.user.last_login = new Date()
+            await req.user.save()
+
             logger.info("Login success")
             res.redirect("/api/products")
 
@@ -66,35 +69,21 @@ router.get("/failLogin", async (req, res) => {
 });
   
 router.get("/logout", async (req, res) => {
-    try {    
-        req.session.destroy((err) => {
-            if(err){
-                logger.error("Error in logout\n", err)
-                res.status(500).render("errors/base", {error: err})
-            }
-
-            const logoutEvent = {
-                user: req.session.user,
-                timestamp: new Date().toISOString(),
-                ip: req.body,
-                action: "Logout"
-            }
-
+    req.session.destroy((err) => {
+        if (err) {
+            logger.error("Error in logout\n", err);
+            res.status(500).render("errors/base", { error: err });
+        } else {
             logger.info("Logout success");
-            res.redirect("/api/session/login")
-        })
-    }catch(err) {
-        logger.error("An error occurred during logout: ", err);
-        res.status(500).json({ status: "error", error: "An error occurred during logout" });  
-    }
+            res.redirect("/api/session/login");
+        }
+    });
 
 })
 
 router.get("/github",
     passport.authenticate("github", { scope: ["user: email"] }),
-    async (req, res) => {
-        
-    }
+    async (req, res) => {}  
 );
   
 

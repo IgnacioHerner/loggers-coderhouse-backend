@@ -19,6 +19,7 @@ import cartsRouter from "./routes/carts.routes.js";
 import sessionRouter from "./routes/session.routes.js";
 import loggerTest from "./routes/loggerTest.routes.js";
 import usersRouter from './routes/users.routes.js'
+import usersManager from './routes/users.manager.routes.js'
 // ? ERRORS 
 import errorHandler from "./middleware/error.middleware.js";
 import error404 from './middleware/404.middleware.js'
@@ -75,7 +76,8 @@ app.use("/api/products", ensureAuthenticated, productsRouter);
 app.use("/api/carts", ensureAuthenticated, cartsRouter);
 app.use("/api/session", sessionRouter);
 app.use("/api/loggerTest", loggerTest);
-app.use("/api/users", ensureAuthenticated, usersRouter);
+app.use("/api/user", ensureAuthenticated, usersRouter);
+app.use("/api/users", ensureAuthenticated, usersManager)
 app.use("/docs", SwaggerUiExpress.serve, SwaggerUiExpress.setup(specs))
 app.use(error404)
 

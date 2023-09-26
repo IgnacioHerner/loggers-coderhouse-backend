@@ -1,3 +1,4 @@
+import Cart from '../dao/models/cart.model.js'
 import cartModel from '../dao/models/cart.model.js'
 import productModel from '../dao/models/product.model.js';
 import ticketModel from '../dao/models/ticket.model.js'
@@ -8,7 +9,9 @@ import EErros from './errors/enums.js'
 
 export const getCartsService = async (userId) => {
     try {
+
         const user = await userModel.findById(userId).lean().exec()
+
         if(!user) {
             throw new CustomError({
                 name: "UserNotFoundError",
@@ -17,13 +20,17 @@ export const getCartsService = async (userId) => {
             })
         }
 
-        const cart = await cartModel.findById(user.cart)
+        const cart = await Cart.findById(user.cart)
             .populate("products.productId")
             .lean()
             .exec();
 
-        if (!cart) {
-            throw new Error("Cart not found");
+        if(!cart) {
+            throw new CustomError({
+                name: "CartNotFound",
+                message: "Cart not found",
+                code: EErros.ERROR_GET_CARTS
+            })
         }
         return cart;
     } catch (err){

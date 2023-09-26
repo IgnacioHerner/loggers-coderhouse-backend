@@ -2,14 +2,14 @@
   <input type="text" name="query" value="{{query}}" placeholder="Buscar..." />
   <input type="hidden" name="limit" value="{{limit}}" />
   <input type="hidden" name="sort" value="{{sort}}" />
-  <button type="submit">Buscar</button>
-  <a href="/api/products/mockingproducts">Quitar filtros</a>
+  <button type="submit">Search</button>
+  <a href="/api/products/mockingproducts">Remove filters</a>
 </form>
 
 <form action="/api/session/logout" method="GET">
-  <h1>Bienvenido, {{userEmail}}!</h1>
-  <p>Rol: {{userRole}}</p>
-  <button type="submit">Cerrar sesión</button>
+  <h1>Welcome, {{userEmail}}!</h1>
+  <p>Role: {{userRole}}</p>
+  <button type="submit">Logout</button>
 </form>
 
 <div>
@@ -18,8 +18,8 @@
       <h2>{{this.title}}</h2>
       <p>{{this.description}}</p>
       <p>{{this.category}}</p>
-      <p>Stock Disponible: {{this.stock}}</p>
-      <h3>Precio: $ {{this.price}}</h3>
+      <p>Stock: {{this.stock}}</p>
+      <h3>Price: $ {{this.price}}</h3>
       <hr>
   {{/each}}
 </div>
@@ -27,11 +27,11 @@
 {{#if mockingProducts.hasPrevPage}}
   <a
     href="/api/products/mockingproducts?page={{mockingProducts.prevPage}}&limit={{limit}}&sort={{sort}}&query={{query}}"
-  >Página anterior</a>
+  >Previous page</a>
 {{/if}}
 
 {{#if mockingProducts.hasNextPage}}
   <a
     href="/api/products/mockingproducts?page={{mockingProducts.nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}"
-  >Página siguiente</a>
+  >Next page</a>
 {{/if}}

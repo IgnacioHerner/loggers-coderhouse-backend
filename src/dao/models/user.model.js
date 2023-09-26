@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
         enum: ["admin", "user"],
         default: "user",
     },
+    last_login: {
+        type: Date,
+        default: Date.now,
+    }
 })
 
 mongoose.set('strictQuery', false);

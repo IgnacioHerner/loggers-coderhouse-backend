@@ -1,42 +1,44 @@
 <form action="/api/products" method="GET">
-  <input type="text" name="query" value="{{query}}" placeholder="Buscar..." />
+  <input type="text" name="query" value="{{query}}" placeholder="Search..." />
   <input type="hidden" name="limit" value="{{limit}}" />
   <input type="hidden" name="sort" value="{{sort}}" />
-  <button type="submit">Buscar</button>
-  <a href="/api/products">Quitar filtros</a>
+  <button type="submit">Search</button>
+  <a href="/api/products">Remove filters</a>
   |
-  <a href="/api/carts">Ir al carrito</a>
-    {{#if isAdminUser}}
-    <a href="/api/products/create">Crear producto</a>
-  {{/if}}
+  <a href="/api/carts">Cart</a>
+  |
+  <a href="/api/products/create">Create product</a>
+  |
+  <a href="/api/products/manager">Manage products</a>
+  |
+  <a href="/api/users">Admin dashboard</a>
 </form>
 
 <form action="/api/session/logout" method="GET">
-  <h1>Bienvenido, {{userEmail}}!</h1>
-  <p>Rol: {{userRole}}</p>
-  <button type="submit">Cerrar sesión</button>
+  <h1>Welcome, <a href="/api/user">{{userEmail}}!</a></h1>
+  <a href="/api/user">My account</a>
+  <p>Role: {{userRole}}</p>
+  <button type="submit">Logout</button>
 </form>
 
 <div>
   {{#each products.docs}}
-    <i>
+    <div>
       <h2>{{this.title}}</h2>
       <p>{{this.description}}</p>
       <p>{{this.category}}</p>
-      <p>Stock Disponible: {{this.stock}}</p>
-      <h3>Precio: $ {{this.price}}</h3>
-      
-
-      <!-- Botón para agregar producto al carrito -->
+      <p>Stock: {{this.stock}}</p>
+      <h3>Price: $ {{this.price}}</h3>
+      <p>Owner: {{this.owner}}</p>
+      <img src={{this.thumbnail}} alt="" width="100px">
       <form action="/api/carts/add-to-cart" method="POST">
         <input type="hidden" name="productId" value="{{this._id}}" />
-        <button type="submit">Agregar al carrito</button>
+        <button type="submit">Add to cart</button>
       </form>
 
-      <!-- Botón para eliminar producto del carrito -->
       <form action="/api/carts/remove-from-cart" method="POST">
         <input type="hidden" name="productId" value="{{this._id}}" />
-        <button type="submit">Eliminar del carrito</button>
+        <button type="submit">Remove from cart</button>
       </form>
     </div>
     <hr />
@@ -46,11 +48,11 @@
 {{#if products.hasPrevPage}}
   <a
     href="/api/products?page={{products.prevPage}}&limit={{limit}}&sort={{sort}}&query={{query}}"
-  >Página anterior</a>
+  >Previous page</a>
 {{/if}}
 
 {{#if products.hasNextPage}}
   <a
     href="/api/products?page={{products.nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}"
-  >Página siguiente</a>
+  >Next page</a>
 {{/if}}

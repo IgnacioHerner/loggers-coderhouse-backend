@@ -13,6 +13,9 @@ import { fileURLToPath } from "url";
 import initializePassport from "./config/passport.config.js";
 import { MONGO_DB_NAME, MONGO_URI } from "./config/config.js";
 import { ServerUp } from "./dto/persistanceFactory.js";
+import { generateProductsMocking } from "./utils/utils.js";
+import { generateProducts } from "./utils/utils.js";
+
 // ? ROUTES
 import productsRouter from "./routes/products.routes.js";
 import cartsRouter from "./routes/carts.routes.js";
@@ -81,8 +84,8 @@ app.use("/api/users", ensureAuthenticated, usersManager)
 app.use("/docs", SwaggerUiExpress.serve, SwaggerUiExpress.setup(specs))
 app.use(error404)
 
-// generateProductsMocking();
+generateProductsMocking();
 
-// generateProducts()
+generateProducts()
 
 ServerUp(app);

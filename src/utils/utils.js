@@ -42,37 +42,37 @@ export const isValidPassword = (user, password) => {
 // //     next()
 // // }
 
-// export const generateProductsMocking = async () => {
-//     const existingMocking = await mockingModel.countDocuments()
+export const generateProductsMocking = async () => {
+    const existingMocking = await mockingModel.countDocuments()
 
-//     if(!existingMocking){
-//         for (let i = 0; i < 100; i++){
-//             const mockingProducts = await mockingModel.insertMany([
-//                 {
-//                     title: faker.commerce.productName(),
-//                     description: faker.commerce.productDescription(),
-//                     price: faker.commerce.price(),
-//                     status: true,
-//                     code: faker.string.uuid(),
-//                     stock: faker.number.int({ min: 1, max: 15 }),
-//                     category: faker.commerce.department(),
-//                     thumbnail: [faker.image.urlPicsumPhotos()],
-//                 }
-//             ])
-//         }
+    if(!existingMocking){
+        for (let i = 0; i < 100; i++){
+            const mockingProducts = await mockingModel.insertMany([
+                {
+                    title: faker.commerce.productName(),
+                    description: faker.commerce.productDescription(),
+                    price: faker.commerce.price(),
+                    status: true,
+                    code: faker.string.uuid(),
+                    stock: faker.number.int({ min: 1, max: 15 }),
+                    category: faker.commerce.department(),
+                    thumbnail: [faker.image.urlPicsumPhotos()],
+                }
+            ])
+        }
 
-//         logger.info("Generating products mocking")
-//     }
-// }
+        logger.info("Generating products mocking")
+    }
+}
 
-// export const generateProducts = async (req, res) => {
-//     const existProducts = await productModel.countDocuments()
+export const generateProducts = async (req, res) => {
+    const existProducts = await productModel.countDocuments()
 
-//     if(!existProducts){
-//         logger.info("Generating products")
-//         createProductDB();
-//     }
-// }
+    if(!existProducts){
+        logger.info("Generating products")
+        createProductDB();
+    }
+}
 
 export const generateRandomString = (num) => { // el argumento trae la cantidad (16)
     return [...Array(num)] // crea un array de 16 elementos

@@ -15,7 +15,7 @@ export const deleteAccountMailer = async (email) => {
         theme: "default",
         product: {
             name: "e-commerce Nba Store API",
-            link: "http://localhost:8080/api/products",
+            link: "loggers-coderhouse-backend-production.up.railway.app/api/products",
         },
     })
 
@@ -29,7 +29,7 @@ export const deleteAccountMailer = async (email) => {
                 button: {
                     color: "#22BC66",
                     text: "Create new account",
-                    link: "http://localhost:8080/api/session/register", // Railway
+                    link: "loggers-coderhouse-backend-production.up.railway.app/api/session/register", // Railway
                 },
             },
           outro:

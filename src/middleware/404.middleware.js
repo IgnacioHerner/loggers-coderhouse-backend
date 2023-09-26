@@ -3,7 +3,7 @@ import {Router} from 'express'
 export const router = Router()
 
 router.get('*', (req, res) => {
-    res.status(404).render("loggers-coderhouse-backend-production.up.railway.app/api/session/login")
+    res.status(404).render("errors/404")
 })
 
 export default router;

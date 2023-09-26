@@ -26,7 +26,7 @@ export const ServerUp = async (app) => {
   
       case "PROD":
         try {
-          await mongoose.connect(ATLAS_URI, {
+          await mongoose.connect(MONGO_URI, {
             dbName: MONGO_DB_TEST_NAME,
           });
           logger.debug("DB production connected!");
